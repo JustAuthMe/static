@@ -1,0 +1,4 @@
+.idea/
+/vendor/
+/medias/*
+config.dist.php
