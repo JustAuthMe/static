@@ -17,18 +17,31 @@ $args = explode('/', $_GET['arg']);
 if (isJamInternal()) {
     switch ($_SERVER['REQUEST_METHOD']) {
         case 'POST':
-            if (isset($_FILES['file'])) {
-                $ext = strtolower(pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION));
-                if (in_array($ext, ALLOWED_FILE_EXTENSIONS)) {
-                    $filename = UPLOAD_DIR . uniqid() . '.' . $ext;
-                    move_uploaded_file($_FILES['file']['tmp_name'], ROOT . $filename);
+            $is_proper_file = isset($_FILES['file']) && $_FILES['file']['size'] > 0;
+            $is_base64 = isset($_POST['file']) && $_POST['file'] !== '';
+            $file = $is_proper_file ? $_FILES['file'] : ($is_base64 ? $_POST['file'] : null);
 
-                    $response = ['status' => 'success', 'url' => 'https://static.justauth.me/' . $filename];
+            if (!$is_base64 || isset($file['name'], $file['content'])) {
+                if ($file !== null) {
+                    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+                    if (in_array($ext, ALLOWED_FILE_EXTENSIONS)) {
+                        $filename = UPLOAD_DIR . uniqid() . '.' . $ext;
+
+                        if ($is_proper_file) {
+                            move_uploaded_file($file['tmp_name'], ROOT . $filename);
+                        } else {
+                            file_put_contents(ROOT . $filename, file_get_contents($file['content']));
+                        }
+
+                        $response = ['status' => 'success', 'url' => 'https://static.justauth.me/' . $filename];
+                    } else {
+                        $response['message'] = 'Forbidden file extension';
+                    }
                 } else {
-                    $response['message'] = 'Forbidden file extension';
+                    $response['message'] = 'No such file';
                 }
             } else {
-                $response['message'] = 'No such file';
+                $response['message'] = 'File name and content are required when file is transfered in base 64';
             }
             break;
 
