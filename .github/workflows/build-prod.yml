@@ -22,14 +22,14 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           ref: refs/tags/${{ steps.getrelease.outputs.release }}
-          path: httpdocs.new
+          path: html.new
       - name: Update permissions
-        run: chmod a+x httpdocs.new/.github/scripts/build-prod.sh
+        run: chmod a+x html.new/.github/scripts/build-prod.sh
         shell: bash
       - name: Build artifact
         env:
           TAG: ${{ steps.getrelease.outputs.release }}
-        run: httpdocs.new/.github/scripts/build-prod.sh
+        run: html.new/.github/scripts/build-prod.sh
         shell: bash
       - name: Attach artifact to release
         uses: svenstaro/upload-release-action@2.2.1
