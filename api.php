@@ -41,7 +41,7 @@ if (isJamInternal()) {
                     $response['message'] = 'No such file';
                 }
             } else {
-                $response['message'] = 'File name and content are required when file is transfered in base 64';
+                $response['message'] = 'File name and content are required when file is transferred in base 64';
             }
             break;
 
@@ -66,7 +66,7 @@ if (isJamInternal()) {
                     'status' => 'success',
                     'url' => 'https://static.justauth.me/' . $filename,
                     'size' => filesize($root_filename),
-                    'updated_at' => filemtime($root_filename)
+                    'updated_at' => date('Y-m-d H:i:s', filemtime($root_filename))
                 ];
             } else {
                 $http_status = '404 Not Found';
